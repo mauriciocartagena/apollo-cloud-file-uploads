@@ -16,13 +16,12 @@ export class CloudinaryUploader implements ApolloServerFileUploads.IUploader {
     cloudinary.v2.config({
       cloud_name: config.cloudname,
       api_key: config.apiKey,
-      api_secret: config.apiSecret
+      api_secret: config.apiSecret,
     });
   }
 
   private createUploadStream(fileName: string, cb: Function): any {
     return cloudinary.v2.uploader.upload_stream(
-      
       /**
        * We need a ts-ignore on the next line because for v2,
        * the order of params for upload_stream is reversed.
@@ -38,7 +37,8 @@ export class CloudinaryUploader implements ApolloServerFileUploads.IUploader {
     parent,
     { file }: { file: ApolloServerFileUploads.File }
   ): Promise<ApolloServerFileUploads.UploadedFileResponse> {
-    const { stream, filename, mimetype, encoding } = await file;
+    const { createReadStream, filename, mimetype, encoding } = await file;
+    let stream = createReadStream();
 
     return new Promise((resolve, reject) => {
       const uploadStream = this.createUploadStream(
@@ -49,7 +49,7 @@ export class CloudinaryUploader implements ApolloServerFileUploads.IUploader {
             filename,
             mimetype,
             encoding,
-            url: result.url
+            url: result.url,
           } as ApolloServerFileUploads.UploadedFileResponse);
         }
       );
@@ -63,7 +63,7 @@ export class CloudinaryUploader implements ApolloServerFileUploads.IUploader {
     { files }: { files: ApolloServerFileUploads.File[] }
   ): Promise<ApolloServerFileUploads.UploadedFileResponse[]> {
     return Promise.all(
-      files.map(f => this.singleFileUploadResolver(null, { file: f }))
+      files.map((f) => this.singleFileUploadResolver(null, { file: f }))
     );
   }
 }

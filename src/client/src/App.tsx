@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 
 const SINGLE_UPLOAD = gql`
-  mutation($file: Upload!) {
+  mutation ($file: Upload!) {
     singleUpload(file: $file) {
       filename
       mimetype
@@ -19,8 +18,8 @@ const UploadFile = () => {
   const onChange = ({
     target: {
       validity,
-      files: [file]
-    }
+      files: [file],
+    },
   }: any) => validity.valid && mutate({ variables: { file } });
 
   useEffect(() => {
@@ -33,11 +32,11 @@ const UploadFile = () => {
   return (
     <React.Fragment>
       <input type="file" required onChange={onChange} />
-      <br/>
+      <br />
       {Object.keys(lastUploaded).length !== 0 && (
         <div>
           {" "}
-          Last uploaded details => {JSON.stringify(lastUploaded, null, 2)}{" "}
+          Last uploaded details {JSON.stringify(lastUploaded, null, 2)}{" "}
         </div>
       )}
     </React.Fragment>
@@ -57,4 +56,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
